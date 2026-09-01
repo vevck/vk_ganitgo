@@ -21,3 +21,6 @@ This is a single self-contained HTML file with no build step or dependencies.
 ## Tech
 
 Vanilla HTML, CSS, and JavaScript — no frameworks or external libraries required (Google Fonts are loaded via CDN for typography).
+
+## Application Website
+https://ganitgo.netlify.app/
