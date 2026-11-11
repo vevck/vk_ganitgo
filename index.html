@@ -177,8 +177,8 @@
 
   .mode-grid{
     display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
   }
 
   .mode-card{
@@ -212,6 +212,30 @@
     cursor: not-allowed;
     transform: none !important;
     box-shadow: none !important;
+  }
+
+  /* ---- Revise screen ---- */
+  .revise-tabs{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .revise-list{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 14px;
+    margin-bottom: 24px;
+  }
+  .revise-row{
+    font-family: 'Fredoka', sans-serif;
+    font-size: 16.5px;
+    font-weight: 600;
+    padding: 9px 8px;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    text-align: center;
+    background: #fff;
   }
 
   /* ---- Quiz screens (practice + race) ---- */
@@ -379,6 +403,7 @@
     .question{ font-size: 40px; }
     .panel{ padding: 22px 18px; }
     .chip{ width: 38px; padding: 7px 2px; font-size: 13.5px; }
+    .mode-grid{ grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -395,7 +420,7 @@
   <!-- HOME -->
   <section id="screen-home" class="panel">
     <h1 class="hero">Pick your tables, pick your pace.</h1>
-    <p class="sub">Practice mode makes you type the answer. Race mode puts a clock on it. Nothing is saved — every round starts fresh.</p>
+    <p class="sub">Practice mode makes you type the answer. Race mode puts a clock on it. Revise mode just shows you the tables. Nothing is saved — every round starts fresh.</p>
 
     <div class="section-label">Tables to include</div>
     <div class="chips" id="chip-container"></div>
@@ -415,7 +440,20 @@
         <h3>Race</h3>
         <p>60 seconds. Tap the right answer. Streaks earn bonus points.</p>
       </div>
+      <div class="mode-card" id="mode-revise">
+        <h3>Revise</h3>
+        <p>Browse the full 11–20 times tables. No quiz, just a reference.</p>
+      </div>
     </div>
+  </section>
+
+  <!-- REVISE -->
+  <section id="screen-revise" class="panel hidden">
+    <h1 class="hero">Revise the 11–20 tables.</h1>
+    <p class="sub">Pick a table to browse — this is a reference, not a quiz.</p>
+    <div class="revise-tabs" id="revise-tabs"></div>
+    <div class="revise-list" id="revise-list"></div>
+    <button class="btn ghost" id="revise-back">Back to home</button>
   </section>
 
   <!-- PRACTICE -->
@@ -520,7 +558,7 @@
   }
 
   function showScreen(id){
-    ['screen-home','screen-practice','screen-race','screen-results'].forEach(function(s){
+    ['screen-home','screen-revise','screen-practice','screen-race','screen-results'].forEach(function(s){
       document.getElementById(s).classList.toggle('hidden', s !== id);
     });
   }
@@ -538,6 +576,50 @@
       return;
     }
     startRace();
+  });
+  document.getElementById('mode-revise').addEventListener('click', startRevise);
+
+  // ---------- REVISE MODE ----------
+  var reviseTable = 11;
+
+  function startRevise(){
+    showScreen('screen-revise');
+    renderReviseTabs();
+    renderReviseList();
+  }
+
+  function renderReviseTabs(){
+    var tabs = document.getElementById('revise-tabs');
+    tabs.innerHTML = '';
+    for (var t = 11; t <= 20; t++){
+      (function(table){
+        var btn = document.createElement('button');
+        btn.className = 'chip' + (table === reviseTable ? ' on' : '');
+        btn.type = 'button';
+        btn.textContent = table;
+        btn.addEventListener('click', function(){
+          reviseTable = table;
+          renderReviseTabs();
+          renderReviseList();
+        });
+        tabs.appendChild(btn);
+      })(t);
+    }
+  }
+
+  function renderReviseList(){
+    var list = document.getElementById('revise-list');
+    list.innerHTML = '';
+    for (var i = 1; i <= 12; i++){
+      var row = document.createElement('div');
+      row.className = 'revise-row';
+      row.textContent = reviseTable + ' × ' + i + ' = ' + (reviseTable * i);
+      list.appendChild(row);
+    }
+  }
+
+  document.getElementById('revise-back').addEventListener('click', function(){
+    showScreen('screen-home');
   });
 
   // ---------- PRACTICE MODE ----------
